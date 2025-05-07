@@ -1,7 +1,7 @@
 from typing import Tuple
 
 import numpy as np
-from scipy.sparse import coo_matrix
+from scipy.sparse import coo_matrix, csr_matrix
 from scipy.sparse.csgraph import min_weight_full_bipartite_matching
 
 from ._typing_utils import IntArray
@@ -23,7 +23,11 @@ def lap_optimization(cost_matrix: Matrix) -> Tuple[IntArray, IntArray]:
     ys : IntArray
         the indices such that assigned indices are (y[j],j) (j=0 ... )
     """
-    rows, cols = min_weight_full_bipartite_matching(coo_matrix(cost_matrix))
+    
+    coo = coo_matrix(cost_matrix)
+    csr = coo.tocsr()
+
+    rows, cols = min_weight_full_bipartite_matching(csr)
     xs = cols[np.argsort(rows)]
     ys = rows[np.argsort(cols)]
     return xs, ys
